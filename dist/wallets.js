@@ -40,6 +40,9 @@ function generateP2SHWallet(n, m, publicKeys) {
     if (!number_validator_1.isWholeNumber(m) || !number_validator_1.isWholeNumber(n)) {
         throw new BadError_1.BadError('M or N must be a whole number');
     }
+    if (publicKeys.length < Number(m)) {
+        throw new BadError_1.BadError('Public key count cannot be less than m');
+    }
     // TODO: Add more validation with public keys
     var pubkeys = [];
     for (var i = 0; i < publicKeys.length; i++) {
@@ -54,7 +57,7 @@ function generateP2SHWallet(n, m, publicKeys) {
     var wallet;
     try {
         wallet = bitcoin.payments.p2sh({
-            redeem: bitcoin.payments.p2ms({ m: Number(n), pubkeys: pubkeys }),
+            redeem: bitcoin.payments.p2ms({ m: Number(m), pubkeys: pubkeys }),
         });
     }
     catch (BitcoinError) {

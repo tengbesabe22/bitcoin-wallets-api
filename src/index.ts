@@ -14,8 +14,13 @@ app.get('/', (req: express.Request, res: express.Response, next: express.NextFun
 
 app.post('/wallets/multisig', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   let address: string | undefined;
+  const {
+    n,
+    m,
+    publicKeys,
+  } = req.body;
   try {
-    address = generateP2SHWallet(req.body.n, req.body.m, req.body.publicKeys);
+    address = generateP2SHWallet(n, m, publicKeys);
     res.send({ address })
   } catch (WalletError) {
     res.status(WalletError.status).send(WalletError);

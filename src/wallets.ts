@@ -22,6 +22,10 @@ export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
     throw new BadError('M or N must be a whole number');
   }
 
+  if (publicKeys.length < Number(m)) {
+    throw new BadError('Public key count cannot be less than m');
+  }
+
   // TODO: Add more validation with public keys
   let pubkeys: Buffer[] = [];
   for(let i: number = 0; i < publicKeys.length; i++) {
@@ -36,7 +40,7 @@ export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
   let wallet: bitcoin.Payment;
   try {
     wallet = bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2ms({ m: Number(n), pubkeys }),
+      redeem: bitcoin.payments.p2ms({ m: Number(m), pubkeys }),
     });
   } catch (BitcoinError) {
     throw new HttpError(new Date(), 500, BitcoinError.message)

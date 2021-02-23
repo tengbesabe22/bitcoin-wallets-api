@@ -15,8 +15,9 @@ app.get('/', function (req, res, next) {
 });
 app.post('/wallets/multisig', function (req, res, next) {
     var address;
+    var _a = req.body, n = _a.n, m = _a.m, publicKeys = _a.publicKeys;
     try {
-        address = wallets_1.generateP2SHWallet(req.body.n, req.body.m, req.body.publicKeys);
+        address = wallets_1.generateP2SHWallet(n, m, publicKeys);
         res.send({ address: address });
     }
     catch (WalletError) {
