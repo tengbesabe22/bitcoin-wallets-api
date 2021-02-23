@@ -1,4 +1,6 @@
 import * as bitcoin from 'bitcoinjs-lib';
+import * as bip39 from 'bip39';
+import * as bip32 from 'bip32';
 import { BadError } from './responses/BadError';
 import { HttpError } from './responses/HttpError';
 import { isWholeNumber } from './validators/number.validator';
@@ -47,4 +49,27 @@ export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
   }
 
   return wallet.address;
+}
+
+export function generateBip49Wallet(mnemonic: string, path: string) {
+  const METHOD = '[generateBip49Wallet]';
+  console.info(`${TAG} ${METHOD}`);
+
+  if (!bip39.validateMnemonic(mnemonic)) {
+    throw new BadError('Invalid Mnemonic');
+  }
+
+  const seed = bip39.mnemonicToSeedSync(mnemonic);
+  const root = bip32.fromSeed(seed);
+  const child = root.derivePath(path);
+  const wallet = bitcoin.payments.p2sh({
+    redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoin.networks.bitcoin }),
+    network: bitcoin.networks.bitcoin
+  });
+
+  return {
+    address: wallet.address,
+    publicKey: wallet.redeem?.pubkey.toString('hex'),
+    privateKey: child.toWIF()
+  };
 }

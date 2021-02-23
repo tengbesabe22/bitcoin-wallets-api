@@ -19,8 +19,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateP2SHWallet = void 0;
+exports.generateBip49Wallet = exports.generateP2SHWallet = void 0;
 var bitcoin = __importStar(require("bitcoinjs-lib"));
+var bip39 = __importStar(require("bip39"));
+var bip32 = __importStar(require("bip32"));
 var BadError_1 = require("./responses/BadError");
 var HttpError_1 = require("./responses/HttpError");
 var number_validator_1 = require("./validators/number.validator");
@@ -66,3 +68,24 @@ function generateP2SHWallet(n, m, publicKeys) {
     return wallet.address;
 }
 exports.generateP2SHWallet = generateP2SHWallet;
+function generateBip49Wallet(mnemonic, path) {
+    var _a;
+    var METHOD = '[generateBip49Wallet]';
+    console.info(TAG + " " + METHOD);
+    if (!bip39.validateMnemonic(mnemonic)) {
+        throw new BadError_1.BadError('Invalid Mnemonic');
+    }
+    var seed = bip39.mnemonicToSeedSync(mnemonic);
+    var root = bip32.fromSeed(seed);
+    var child = root.derivePath(path);
+    var wallet = bitcoin.payments.p2sh({
+        redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoin.networks.bitcoin }),
+        network: bitcoin.networks.bitcoin
+    });
+    return {
+        address: wallet.address,
+        publicKey: (_a = wallet.redeem) === null || _a === void 0 ? void 0 : _a.pubkey.toString('hex'),
+        privateKey: child.toWIF()
+    };
+}
+exports.generateBip49Wallet = generateBip49Wallet;
