@@ -21,6 +21,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateP2SHWallet = void 0;
 var bitcoin = __importStar(require("bitcoinjs-lib"));
+var BadError_1 = require("./responses/BadError");
+var HttpError_1 = require("./responses/HttpError");
+var number_validator_1 = require("./validators/number.validator");
 var TAG = '[WalletService]';
 /**
  * Generate Multisignature P2SH wallet
@@ -31,12 +34,32 @@ var TAG = '[WalletService]';
 function generateP2SHWallet(n, m, publicKeys) {
     var METHOD = '[generateP2SHWallet]';
     console.info(TAG + " " + METHOD);
-    // TODO: Validate Inputs
+    if (Number.isNaN(Number(m)) || Number.isNaN(Number(n))) {
+        throw new BadError_1.BadError('Invalid M or N, must be a number');
+    }
+    if (!number_validator_1.isWholeNumber(m) || !number_validator_1.isWholeNumber(n)) {
+        throw new BadError_1.BadError('M or N must be a whole number');
+    }
+    // TODO: Add more validation with public keys
+    var pubkeys = [];
+    for (var i = 0; i < publicKeys.length; i++) {
+        if (publicKeys[i].length !== 66) {
+            throw new BadError_1.BadError("Invalid Public Key on index " + i);
+        }
+        else {
+            pubkeys.push(Buffer.from(publicKeys[i], 'hex'));
+        }
+    }
     // GENERATE P2SH WALLET
-    var pubkeys = publicKeys.map(function (pub) { return Buffer.from(pub, 'hex'); });
-    var address = bitcoin.payments.p2sh({
-        redeem: bitcoin.payments.p2ms({ m: Number(n), pubkeys: pubkeys }),
-    }).address;
-    return address;
+    var wallet;
+    try {
+        wallet = bitcoin.payments.p2sh({
+            redeem: bitcoin.payments.p2ms({ m: Number(n), pubkeys: pubkeys }),
+        });
+    }
+    catch (BitcoinError) {
+        throw new HttpError_1.HttpError(new Date(), 500, BitcoinError.message);
+    }
+    return wallet.address;
 }
 exports.generateP2SHWallet = generateP2SHWallet;

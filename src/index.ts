@@ -13,8 +13,13 @@ app.get('/', (req: express.Request, res: express.Response, next: express.NextFun
 });
 
 app.post('/wallets/multisig', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const address = generateP2SHWallet(req.body.n, req.body.m, req.body.publicKeys);
-  res.send({ address });
+  let address: string | undefined;
+  try {
+    address = generateP2SHWallet(req.body.n, req.body.m, req.body.publicKeys);
+    res.send({ address })
+  } catch (WalletError) {
+    res.status(WalletError.status).send(WalletError);
+  }
 });
 
 const port = process.env.PORT || 7777;

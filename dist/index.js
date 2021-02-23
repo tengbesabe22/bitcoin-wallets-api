@@ -14,8 +14,14 @@ app.get('/', function (req, res, next) {
     res.send('Hello Everybody');
 });
 app.post('/wallets/multisig', function (req, res, next) {
-    var address = wallets_1.generateP2SHWallet(req.body.n, req.body.m, req.body.publicKeys);
-    res.send({ address: address });
+    var address;
+    try {
+        address = wallets_1.generateP2SHWallet(req.body.n, req.body.m, req.body.publicKeys);
+        res.send({ address: address });
+    }
+    catch (WalletError) {
+        res.status(WalletError.status).send(WalletError);
+    }
 });
 var port = process.env.PORT || 7777;
 app.listen(port, function () { return console.log("App listening to port " + port); });
