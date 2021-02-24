@@ -26,6 +26,7 @@ var bip32 = __importStar(require("bip32"));
 var BadError_1 = require("./responses/BadError");
 var HttpError_1 = require("./responses/HttpError");
 var number_validator_1 = require("./validators/number.validator");
+var wallet_utils_1 = require("./utils/wallet.utils");
 var TAG = '[WalletService]';
 /**
  * Generate Multisignature P2SH wallet
@@ -68,23 +69,27 @@ function generateP2SHWallet(n, m, publicKeys) {
     return wallet.address;
 }
 exports.generateP2SHWallet = generateP2SHWallet;
-function generateBip49Wallet(mnemonic, path) {
-    var _a;
+function generateBip49Wallet(mnemonic, initialPath) {
     var METHOD = '[generateBip49Wallet]';
     console.info(TAG + " " + METHOD);
     if (!bip39.validateMnemonic(mnemonic)) {
         throw new BadError_1.BadError('Invalid Mnemonic');
     }
+    // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
+    // TODO: environment friendly
+    var path = wallet_utils_1.standardizePath(initialPath, "49'", "0'");
     var seed = bip39.mnemonicToSeedSync(mnemonic);
     var root = bip32.fromSeed(seed);
+    // DERIVE THE CHILD WALLET
     var child = root.derivePath(path);
     var wallet = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoin.networks.bitcoin }),
         network: bitcoin.networks.bitcoin
     });
+    // TODO: solve Object is possibly 'undefined'
     return {
         address: wallet.address,
-        publicKey: (_a = wallet.redeem) === null || _a === void 0 ? void 0 : _a.pubkey.toString('hex'),
+        publicKey: wallet.redeem.pubkey.toString('hex'),
         privateKey: child.toWIF()
     };
 }

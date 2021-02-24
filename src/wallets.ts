@@ -4,6 +4,7 @@ import * as bip32 from 'bip32';
 import { BadError } from './responses/BadError';
 import { HttpError } from './responses/HttpError';
 import { isWholeNumber } from './validators/number.validator';
+import { standardizePath } from './utils/wallet.utils';
 
 const TAG = '[WalletService]';
 /**
@@ -51,7 +52,7 @@ export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
   return wallet.address;
 }
 
-export function generateBip49Wallet(mnemonic: string, path: string) {
+export function generateBip49Wallet(mnemonic: string, initialPath: string) {
   const METHOD = '[generateBip49Wallet]';
   console.info(`${TAG} ${METHOD}`);
 
@@ -59,17 +60,25 @@ export function generateBip49Wallet(mnemonic: string, path: string) {
     throw new BadError('Invalid Mnemonic');
   }
 
+  // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
+  // TODO: environment friendly
+  const path = standardizePath(initialPath, "49'", "0'")
+
   const seed = bip39.mnemonicToSeedSync(mnemonic);
   const root = bip32.fromSeed(seed);
+
+  // DERIVE THE CHILD WALLET
   const child = root.derivePath(path);
   const wallet = bitcoin.payments.p2sh({
     redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoin.networks.bitcoin }),
     network: bitcoin.networks.bitcoin
   });
 
+
+  // TODO: solve Object is possibly 'undefined'
   return {
     address: wallet.address,
-    publicKey: wallet.redeem?.pubkey.toString('hex'),
+    publicKey: wallet.redeem.pubkey.toString('hex'),
     privateKey: child.toWIF()
   };
 }
