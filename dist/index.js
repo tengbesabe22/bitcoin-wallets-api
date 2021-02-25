@@ -34,5 +34,15 @@ app.post('/wallets/segwit/bip49', function (req, res, next) {
         res.status(WalletError.status).send(WalletError);
     }
 });
+app.post('/wallets/segwit/bech32', function (req, res, next) {
+    var _a = req.body, mnemonic = _a.mnemonic, path = _a.path;
+    try {
+        var wallet = wallets_1.generateBech32Wallet(mnemonic, path);
+        res.send(wallet);
+    }
+    catch (WalletError) {
+        res.status(WalletError.status).send(WalletError);
+    }
+});
 var port = process.env.PORT || 7777;
 app.listen(port, function () { return console.log("App listening to port " + port); });

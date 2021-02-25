@@ -82,3 +82,29 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
     privateKey: child.toWIF()
   };
 }
+
+export function generateBech32Wallet(mnemonic: string, initialPath: string) {
+  const METHOD = '[generateBech32Wallet]';
+  console.info(`${TAG} ${METHOD}`);
+
+  if (!bip39.validateMnemonic(mnemonic)) {
+    throw new BadError('Invalid Mnemonic');
+  }
+
+  // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
+  // TODO: environment friendly
+  const path = standardizePath(initialPath, "84'", "0'");
+
+  const seed = bip39.mnemonicToSeedSync(mnemonic);
+  const root = bip32.fromSeed(seed);
+
+  // DERIVE CHILD WALLET
+  const child = root.derivePath(path);
+  const { address } = bitcoin.payments.p2wpkh({ pubkey: child.publicKey });
+  
+  return {
+    address,
+    publicKey: child.publicKey.toString('hex'),
+    privateKey: child.toWIF(),
+  };
+}

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { generateP2SHWallet, generateBip49Wallet } from './wallets';
+import { generateP2SHWallet, generateBip49Wallet, generateBech32Wallet } from './wallets';
 
 const app = express();
 
@@ -35,6 +35,20 @@ app.post('/wallets/segwit/bip49', (req: express.Request, res: express.Response, 
 
   try {
     const wallet = generateBip49Wallet(mnemonic, path);
+    res.send(wallet);
+  } catch (WalletError) {
+    res.status(WalletError.status).send(WalletError);
+  }
+});
+
+app.post('/wallets/segwit/bech32', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const {
+    mnemonic,
+    path,
+  } = req.body;
+
+  try {
+    const wallet = generateBech32Wallet(mnemonic, path);
     res.send(wallet);
   } catch (WalletError) {
     res.status(WalletError.status).send(WalletError);

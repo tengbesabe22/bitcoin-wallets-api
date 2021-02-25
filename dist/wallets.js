@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateBip49Wallet = exports.generateP2SHWallet = void 0;
+exports.generateBech32Wallet = exports.generateBip49Wallet = exports.generateP2SHWallet = void 0;
 var bitcoin = __importStar(require("bitcoinjs-lib"));
 var bip39 = __importStar(require("bip39"));
 var bip32 = __importStar(require("bip32"));
@@ -94,3 +94,24 @@ function generateBip49Wallet(mnemonic, initialPath) {
     };
 }
 exports.generateBip49Wallet = generateBip49Wallet;
+function generateBech32Wallet(mnemonic, initialPath) {
+    var METHOD = '[generateBech32Wallet]';
+    console.info(TAG + " " + METHOD);
+    if (!bip39.validateMnemonic(mnemonic)) {
+        throw new BadError_1.BadError('Invalid Mnemonic');
+    }
+    // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
+    // TODO: environment friendly
+    var path = wallet_utils_1.standardizePath(initialPath, "84'", "0'");
+    var seed = bip39.mnemonicToSeedSync(mnemonic);
+    var root = bip32.fromSeed(seed);
+    // DERIVE CHILD WALLET
+    var child = root.derivePath(path);
+    var address = bitcoin.payments.p2wpkh({ pubkey: child.publicKey }).address;
+    return {
+        address: address,
+        publicKey: child.publicKey.toString('hex'),
+        privateKey: child.toWIF(),
+    };
+}
+exports.generateBech32Wallet = generateBech32Wallet;
