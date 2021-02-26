@@ -23,7 +23,6 @@ exports.generateBech32Wallet = exports.generateBip49Wallet = exports.generateP2S
 require('dotenv').config();
 var bitcoin = __importStar(require("bitcoinjs-lib"));
 var bip39 = __importStar(require("bip39"));
-var bip32 = __importStar(require("bip32"));
 var BadError_1 = require("./responses/BadError");
 var HttpError_1 = require("./responses/HttpError");
 var number_validator_1 = require("./validators/number.validator");
@@ -80,13 +79,9 @@ function generateBip49Wallet(mnemonic, initialPath) {
     }
     var COIN_TYPE = process.env.COIN_TYPE;
     // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
-    // TODO: environment friendly
     var path = wallet_utils_1.standardizePath(initialPath, "49'", COIN_TYPE);
     var seed = bip39.mnemonicToSeedSync(mnemonic);
-    var root = bip32.fromSeed(seed);
-    // let bitcoinNetwork: { [key: string]: object } | bitcoin.Network;
-    // let bitcoinNetwork : { [key: string]: bitcoin.Network }
-    // bitcoinNetwork = bitcoin.networks;
+    var root = bitcoin.bip32.fromSeed(seed);
     // DERIVE THE CHILD WALLET
     var child = root.derivePath(path);
     var wallet = bitcoin.payments.p2sh({
@@ -111,7 +106,7 @@ function generateBech32Wallet(mnemonic, initialPath) {
     // TODO: environment friendly
     var path = wallet_utils_1.standardizePath(initialPath, "84'", COIN_TYPE);
     var seed = bip39.mnemonicToSeedSync(mnemonic);
-    var root = bip32.fromSeed(seed);
+    var root = bitcoin.bip32.fromSeed(seed);
     // DERIVE CHILD WALLET
     var child = root.derivePath(path);
     var address = bitcoin.payments.p2wpkh({ pubkey: child.publicKey }).address;

@@ -1,7 +1,6 @@
 require('dotenv').config();
 import * as bitcoin from 'bitcoinjs-lib';
 import * as bip39 from 'bip39';
-import * as bip32 from 'bip32';
 import { BadError } from './responses/BadError';
 import { HttpError } from './responses/HttpError';
 import { isWholeNumber } from './validators/number.validator';
@@ -38,7 +37,7 @@ export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
 
   // TODO: Add more validation with public keys
   let pubkeys: Buffer[] = [];
-  for(let i: number = 0; i < publicKeys.length; i++) {
+  for(let i = 0; i < publicKeys.length; i++) {
     if (publicKeys[i].length !== 66) {
       throw new BadError(`Invalid Public Key on index ${i}`);
     } else {
@@ -71,15 +70,14 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
   } = process.env;
 
   // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
-  // TODO: environment friendly
-  const path = standardizePath(initialPath, "49'", COIN_TYPE);
+  const path: string = standardizePath(initialPath, "49'", COIN_TYPE);
 
-  const seed = bip39.mnemonicToSeedSync(mnemonic);
-  const root = bip32.fromSeed(seed);
+  const seed: Buffer = bip39.mnemonicToSeedSync(mnemonic);
+  const root: bitcoin.BIP32Interface = bitcoin.bip32.fromSeed(seed);
 
   // DERIVE THE CHILD WALLET
-  const child = root.derivePath(path);
-  const wallet = bitcoin.payments.p2sh({
+  const child: bitcoin.BIP32Interface = root.derivePath(path);
+  const wallet: bitcoin.Payment = bitcoin.payments.p2sh({
     redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
   });
 
@@ -106,13 +104,13 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
 
   // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
   // TODO: environment friendly
-  const path = standardizePath(initialPath, "84'", COIN_TYPE);
+  const path: string = standardizePath(initialPath, "84'", COIN_TYPE);
 
-  const seed = bip39.mnemonicToSeedSync(mnemonic);
-  const root = bip32.fromSeed(seed);
+  const seed: Buffer = bip39.mnemonicToSeedSync(mnemonic);
+  const root: bitcoin.BIP32Interface = bitcoin.bip32.fromSeed(seed);
 
   // DERIVE CHILD WALLET
-  const child = root.derivePath(path);
+  const child: bitcoin.BIP32Interface = root.derivePath(path);
   const { address } = bitcoin.payments.p2wpkh({ pubkey: child.publicKey });
   
   return {
