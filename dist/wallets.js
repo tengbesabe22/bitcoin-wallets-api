@@ -20,6 +20,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateBech32Wallet = exports.generateBip49Wallet = exports.generateP2SHWallet = void 0;
+require('dotenv').config();
 var bitcoin = __importStar(require("bitcoinjs-lib"));
 var bip39 = __importStar(require("bip39"));
 var bip32 = __importStar(require("bip32"));
@@ -75,16 +76,20 @@ function generateBip49Wallet(mnemonic, initialPath) {
     if (!bip39.validateMnemonic(mnemonic)) {
         throw new BadError_1.BadError('Invalid Mnemonic');
     }
+    var COIN_TYPE = process.env.COIN_TYPE;
     // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
     // TODO: environment friendly
-    var path = wallet_utils_1.standardizePath(initialPath, "49'", "0'");
+    var path = wallet_utils_1.standardizePath(initialPath, "49'", COIN_TYPE);
     var seed = bip39.mnemonicToSeedSync(mnemonic);
     var root = bip32.fromSeed(seed);
+    // let bitcoinNetwork: { [key: string]: object } | bitcoin.Network;
+    var bitcoinNetwork;
+    bitcoinNetwork = bitcoin.networks;
     // DERIVE THE CHILD WALLET
     var child = root.derivePath(path);
     var wallet = bitcoin.payments.p2sh({
-        redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoin.networks.bitcoin }),
-        network: bitcoin.networks.bitcoin
+        redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
+        network: bitcoinNetwork[process.env.BITCOIN_NETWORK]
     });
     // TODO: solve Object is possibly 'undefined'
     return {
@@ -100,9 +105,10 @@ function generateBech32Wallet(mnemonic, initialPath) {
     if (!bip39.validateMnemonic(mnemonic)) {
         throw new BadError_1.BadError('Invalid Mnemonic');
     }
+    var COIN_TYPE = process.env.COIN_TYPE;
     // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
     // TODO: environment friendly
-    var path = wallet_utils_1.standardizePath(initialPath, "84'", "0'");
+    var path = wallet_utils_1.standardizePath(initialPath, "84'", COIN_TYPE);
     var seed = bip39.mnemonicToSeedSync(mnemonic);
     var root = bip32.fromSeed(seed);
     // DERIVE CHILD WALLET

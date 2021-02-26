@@ -1,3 +1,4 @@
+require('dotenv').config();
 import * as bitcoin from 'bitcoinjs-lib';
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
@@ -59,19 +60,28 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
   if (!bip39.validateMnemonic(mnemonic)) {
     throw new BadError('Invalid Mnemonic');
   }
+  const {
+    COIN_TYPE
+  } = process.env;
 
   // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
   // TODO: environment friendly
-  const path = standardizePath(initialPath, "49'", "0'")
+  const path = standardizePath(initialPath, "49'", COIN_TYPE);
 
   const seed = bip39.mnemonicToSeedSync(mnemonic);
   const root = bip32.fromSeed(seed);
 
+  // let bitcoinNetwork: { [key: string]: object } | bitcoin.Network;
+
+  let bitcoinNetwork : { [key: string]: bitcoin.Network }
+
+  bitcoinNetwork = bitcoin.networks;
+
   // DERIVE THE CHILD WALLET
   const child = root.derivePath(path);
   const wallet = bitcoin.payments.p2sh({
-    redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoin.networks.bitcoin }),
-    network: bitcoin.networks.bitcoin
+    redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
+    network: bitcoinNetwork[process.env.BITCOIN_NETWORK]
   });
 
 
@@ -91,9 +101,13 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
     throw new BadError('Invalid Mnemonic');
   }
 
+  const {
+    COIN_TYPE,
+  } = process.env;
+
   // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
   // TODO: environment friendly
-  const path = standardizePath(initialPath, "84'", "0'");
+  const path = standardizePath(initialPath, "84'", COIN_TYPE);
 
   const seed = bip39.mnemonicToSeedSync(mnemonic);
   const root = bip32.fromSeed(seed);
