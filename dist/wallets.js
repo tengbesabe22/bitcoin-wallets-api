@@ -29,6 +29,7 @@ var HttpError_1 = require("./responses/HttpError");
 var number_validator_1 = require("./validators/number.validator");
 var wallet_utils_1 = require("./utils/wallet.utils");
 var TAG = '[WalletService]';
+var bitcoinNetwork = bitcoin.networks;
 /**
  * Generate Multisignature P2SH wallet
  * @param n Number of keys neeeded to perform transaction
@@ -38,6 +39,7 @@ var TAG = '[WalletService]';
 function generateP2SHWallet(n, m, publicKeys) {
     var METHOD = '[generateP2SHWallet]';
     console.info(TAG + " " + METHOD);
+    var BITCOIN_NETWORK = process.env.BITCOIN_NETWORK;
     if (Number.isNaN(Number(m)) || Number.isNaN(Number(n))) {
         throw new BadError_1.BadError('Invalid M or N, must be a number');
     }
@@ -61,7 +63,7 @@ function generateP2SHWallet(n, m, publicKeys) {
     var wallet;
     try {
         wallet = bitcoin.payments.p2sh({
-            redeem: bitcoin.payments.p2ms({ m: Number(m), pubkeys: pubkeys }),
+            redeem: bitcoin.payments.p2ms({ m: Number(m), pubkeys: pubkeys, network: bitcoinNetwork[BITCOIN_NETWORK] }),
         });
     }
     catch (BitcoinError) {
@@ -83,13 +85,12 @@ function generateBip49Wallet(mnemonic, initialPath) {
     var seed = bip39.mnemonicToSeedSync(mnemonic);
     var root = bip32.fromSeed(seed);
     // let bitcoinNetwork: { [key: string]: object } | bitcoin.Network;
-    var bitcoinNetwork;
-    bitcoinNetwork = bitcoin.networks;
+    // let bitcoinNetwork : { [key: string]: bitcoin.Network }
+    // bitcoinNetwork = bitcoin.networks;
     // DERIVE THE CHILD WALLET
     var child = root.derivePath(path);
     var wallet = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
-        network: bitcoinNetwork[process.env.BITCOIN_NETWORK]
     });
     // TODO: solve Object is possibly 'undefined'
     return {
