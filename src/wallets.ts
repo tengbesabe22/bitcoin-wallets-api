@@ -81,11 +81,9 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
     redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
   });
 
-
-  // TODO: solve Object is possibly 'undefined'
   return {
     address: wallet.address,
-    publicKey: wallet.redeem.pubkey.toString('hex'),
+    publicKey: wallet.redeem!.pubkey!.toString('hex'),
     privateKey: child.toWIF()
   };
 }

@@ -87,6 +87,7 @@ function generateBip49Wallet(mnemonic, initialPath) {
     var wallet = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
     });
+    console.log(wallet);
     // TODO: solve Object is possibly 'undefined'
     return {
         address: wallet.address,
