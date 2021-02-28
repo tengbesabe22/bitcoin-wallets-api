@@ -55,6 +55,7 @@ function generateP2SHWallet(n, m, publicKeys) {
         throw new BadError_1.BadError('Public key count cannot be less than m');
     }
     // TODO: Add more validation with public keys
+    // LENGTH OF PUBLIC KEYS ARE 66
     var pubkeys = [];
     for (var i = 0; i < publicKeys.length; i++) {
         if (publicKeys[i].length !== 66) {
@@ -114,7 +115,6 @@ function generateBech32Wallet(mnemonic, initialPath) {
     }
     var _a = process.env, BITCOIN_NETWORK = _a.BITCOIN_NETWORK, COIN_TYPE = _a.COIN_TYPE;
     // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
-    // TODO: environment friendly
     var path = wallet_utils_1.standardizePath(initialPath, "84'", COIN_TYPE);
     var seed = bip39.mnemonicToSeedSync(mnemonic);
     var root = bitcoin.bip32.fromSeed(seed);

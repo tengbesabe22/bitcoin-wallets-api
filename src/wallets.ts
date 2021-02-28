@@ -38,6 +38,7 @@ export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
   }
 
   // TODO: Add more validation with public keys
+  // LENGTH OF PUBLIC KEYS ARE 66
   let pubkeys: Buffer[] = [];
   for(let i = 0; i < publicKeys.length; i++) {
     if (publicKeys[i].length !== 66) {
@@ -110,7 +111,6 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
   } = process.env;
 
   // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
-  // TODO: environment friendly
   const path: string = standardizePath(initialPath, "84'", COIN_TYPE);
 
   const seed: Buffer = bip39.mnemonicToSeedSync(mnemonic);
