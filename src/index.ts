@@ -13,15 +13,14 @@ app.get('/', (req: express.Request, res: express.Response, next: express.NextFun
 });
 
 app.post('/wallets/multisig', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  let address: string | undefined;
   const {
     n,
     m,
     publicKeys,
   } = req.body;
   try {
-    address = generateP2SHWallet(n, m, publicKeys);
-    res.send({ address })
+    const wallet = generateP2SHWallet(n, m, publicKeys);
+    res.status(wallet.status).send(wallet)
   } catch (WalletError) {
     res.status(WalletError.status).send(WalletError);
   }
@@ -35,7 +34,7 @@ app.post('/wallets/segwit/bip49', (req: express.Request, res: express.Response, 
 
   try {
     const wallet = generateBip49Wallet(mnemonic, path);
-    res.send(wallet);
+    res.status(wallet.status).send(wallet);
   } catch (WalletError) {
     res.status(WalletError.status).send(WalletError);
   }
@@ -49,7 +48,7 @@ app.post('/wallets/segwit/bech32', (req: express.Request, res: express.Response,
 
   try {
     const wallet = generateBech32Wallet(mnemonic, path);
-    res.send(wallet);
+    res.status(wallet.status).send(wallet);
   } catch (WalletError) {
     res.status(WalletError.status).send(WalletError);
   }

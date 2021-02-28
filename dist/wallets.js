@@ -25,6 +25,7 @@ var bitcoin = __importStar(require("bitcoinjs-lib"));
 var bip39 = __importStar(require("bip39"));
 var BadError_1 = require("./responses/BadError");
 var HttpError_1 = require("./responses/HttpError");
+var HttpSuccess_1 = require("./responses/HttpSuccess");
 var number_validator_1 = require("./validators/number.validator");
 var wallet_utils_1 = require("./utils/wallet.utils");
 var TAG = '[WalletService]';
@@ -68,7 +69,7 @@ function generateP2SHWallet(n, m, publicKeys) {
     catch (BitcoinError) {
         throw new HttpError_1.HttpError(new Date(), 500, BitcoinError.message);
     }
-    return wallet.address;
+    return new HttpSuccess_1.HttpSuccess({ address: wallet.address });
 }
 exports.generateP2SHWallet = generateP2SHWallet;
 function generateBip49Wallet(mnemonic, initialPath) {
@@ -87,11 +88,11 @@ function generateBip49Wallet(mnemonic, initialPath) {
     var wallet = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
     });
-    return {
+    return new HttpSuccess_1.HttpSuccess({
         address: wallet.address,
         publicKey: wallet.redeem.pubkey.toString('hex'),
         privateKey: child.privateKey.toString('hex'),
-    };
+    });
 }
 exports.generateBip49Wallet = generateBip49Wallet;
 function generateBech32Wallet(mnemonic, initialPath) {
@@ -109,10 +110,10 @@ function generateBech32Wallet(mnemonic, initialPath) {
     // DERIVE CHILD WALLET
     var child = root.derivePath(path);
     var address = bitcoin.payments.p2wpkh({ pubkey: child.publicKey }).address;
-    return {
+    return new HttpSuccess_1.HttpSuccess({
         address: address,
         publicKey: child.publicKey.toString('hex'),
         privateKey: child.privateKey.toString('hex'),
-    };
+    });
 }
 exports.generateBech32Wallet = generateBech32Wallet;

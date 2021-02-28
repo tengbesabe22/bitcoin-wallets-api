@@ -3,6 +3,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as bip39 from 'bip39';
 import { BadError } from './responses/BadError';
 import { HttpError } from './responses/HttpError';
+import { HttpSuccess } from './responses/HttpSuccess';
 import { isWholeNumber } from './validators/number.validator';
 import { standardizePath } from './utils/wallet.utils';
 
@@ -55,7 +56,7 @@ export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
     throw new HttpError(new Date(), 500, BitcoinError.message)
   }
 
-  return wallet.address;
+  return new HttpSuccess({address: wallet.address});
 }
 
 export function generateBip49Wallet(mnemonic: string, initialPath: string) {
@@ -81,11 +82,11 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
     redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
   });
 
-  return {
+  return new HttpSuccess({
     address: wallet.address,
     publicKey: wallet.redeem!.pubkey!.toString('hex'),
     privateKey: child.privateKey!.toString('hex'),
-  };
+  });
 }
 
 export function generateBech32Wallet(mnemonic: string, initialPath: string) {
@@ -110,10 +111,10 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
   // DERIVE CHILD WALLET
   const child: bitcoin.BIP32Interface = root.derivePath(path);
   const { address } = bitcoin.payments.p2wpkh({ pubkey: child.publicKey });
-  
-  return {
+
+  return new HttpSuccess({
     address,
     publicKey: child.publicKey.toString('hex'),
     privateKey: child.privateKey!.toString('hex'),
-  };
+  });
 }
