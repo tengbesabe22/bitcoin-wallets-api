@@ -73,7 +73,12 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
   } = process.env;
 
   // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
-  const path: string = standardizePath(initialPath, "49'", COIN_TYPE);
+  let path: string;
+  try {
+    path = standardizePath(initialPath, "49'", COIN_TYPE);
+  } catch (PathError) {
+    throw new BadError(PathError.message);
+  }
 
   const seed: Buffer = bip39.mnemonicToSeedSync(mnemonic);
   const root: bitcoin.BIP32Interface = bitcoin.bip32.fromSeed(seed);

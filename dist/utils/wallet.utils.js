@@ -10,6 +10,10 @@ var TAG = '[WalletUtils]';
 function standardizePath(path, purpose, coinType) {
     logger.info(TAG + " [standardizePath]");
     var disected = path.split('/');
+    // BASE ON BIP44 DERIVATION PATH
+    if (disected.length !== 6) {
+        throw new Error('Invalid Path');
+    }
     return "m/" + purpose + "/" + coinType + "/" + disected[3] + "/" + disected[4] + "/" + disected[5];
 }
 exports.standardizePath = standardizePath;

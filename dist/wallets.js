@@ -85,7 +85,13 @@ function generateBip49Wallet(mnemonic, initialPath) {
     }
     var _a = process.env, BITCOIN_NETWORK = _a.BITCOIN_NETWORK, COIN_TYPE = _a.COIN_TYPE;
     // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
-    var path = wallet_utils_1.standardizePath(initialPath, "49'", COIN_TYPE);
+    var path;
+    try {
+        path = wallet_utils_1.standardizePath(initialPath, "49'", COIN_TYPE);
+    }
+    catch (PathError) {
+        throw new BadError_1.BadError(PathError.message);
+    }
     var seed = bip39.mnemonicToSeedSync(mnemonic);
     var root = bitcoin.bip32.fromSeed(seed);
     // DERIVE THE CHILD WALLET
