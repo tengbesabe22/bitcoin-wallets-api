@@ -110,8 +110,13 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
     COIN_TYPE,
   } = process.env;
 
-  // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
-  const path: string = standardizePath(initialPath, "84'", COIN_TYPE);
+  // PURPOSE = 84', COINTYPE = 0'(BITCOIN)
+  let path: string;
+  try {
+    path = standardizePath(initialPath, "84'", COIN_TYPE);
+  } catch (PathError) {
+    throw new BadError(PathError.message);
+  }
 
   const seed: Buffer = bip39.mnemonicToSeedSync(mnemonic);
   const root: bitcoin.BIP32Interface = bitcoin.bip32.fromSeed(seed);
