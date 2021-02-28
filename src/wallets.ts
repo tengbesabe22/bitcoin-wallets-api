@@ -111,7 +111,7 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
 
   // DERIVE CHILD WALLET
   const child: bitcoin.BIP32Interface = root.derivePath(path);
-  const { address } = bitcoin.payments.p2wpkh({ pubkey: child.publicKey });
+  const { address } = bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] });
 
   return new HttpSuccess({
     address,

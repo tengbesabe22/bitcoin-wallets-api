@@ -114,7 +114,7 @@ function generateBech32Wallet(mnemonic, initialPath) {
     var root = bitcoin.bip32.fromSeed(seed);
     // DERIVE CHILD WALLET
     var child = root.derivePath(path);
-    var address = bitcoin.payments.p2wpkh({ pubkey: child.publicKey }).address;
+    var address = bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }).address;
     return new HttpSuccess_1.HttpSuccess({
         address: address,
         publicKey: child.publicKey.toString('hex'),
