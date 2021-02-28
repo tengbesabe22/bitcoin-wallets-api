@@ -83,7 +83,7 @@ function generateBip49Wallet(mnemonic, initialPath) {
     if (!bip39.validateMnemonic(mnemonic)) {
         throw new BadError_1.BadError('Invalid Mnemonic');
     }
-    var COIN_TYPE = process.env.COIN_TYPE;
+    var _a = process.env, BITCOIN_NETWORK = _a.BITCOIN_NETWORK, COIN_TYPE = _a.COIN_TYPE;
     // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
     var path = wallet_utils_1.standardizePath(initialPath, "49'", COIN_TYPE);
     var seed = bip39.mnemonicToSeedSync(mnemonic);
@@ -91,7 +91,7 @@ function generateBip49Wallet(mnemonic, initialPath) {
     // DERIVE THE CHILD WALLET
     var child = root.derivePath(path);
     var wallet = bitcoin.payments.p2sh({
-        redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
+        redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[BITCOIN_NETWORK] }),
     });
     return new HttpSuccess_1.HttpSuccess({
         address: wallet.address,
@@ -106,7 +106,7 @@ function generateBech32Wallet(mnemonic, initialPath) {
     if (!bip39.validateMnemonic(mnemonic)) {
         throw new BadError_1.BadError('Invalid Mnemonic');
     }
-    var COIN_TYPE = process.env.COIN_TYPE;
+    var _a = process.env, BITCOIN_NETWORK = _a.BITCOIN_NETWORK, COIN_TYPE = _a.COIN_TYPE;
     // PURPOSE = 49', COINTYPE = 0'(BITCOIN)
     // TODO: environment friendly
     var path = wallet_utils_1.standardizePath(initialPath, "84'", COIN_TYPE);
@@ -114,7 +114,7 @@ function generateBech32Wallet(mnemonic, initialPath) {
     var root = bitcoin.bip32.fromSeed(seed);
     // DERIVE CHILD WALLET
     var child = root.derivePath(path);
-    var address = bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }).address;
+    var address = bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[BITCOIN_NETWORK] }).address;
     return new HttpSuccess_1.HttpSuccess({
         address: address,
         publicKey: child.publicKey.toString('hex'),

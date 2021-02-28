@@ -68,6 +68,7 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
     throw new BadError('Invalid Mnemonic');
   }
   const {
+    BITCOIN_NETWORK,
     COIN_TYPE
   } = process.env;
 
@@ -80,7 +81,7 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
   // DERIVE THE CHILD WALLET
   const child: bitcoin.BIP32Interface = root.derivePath(path);
   const wallet: bitcoin.Payment = bitcoin.payments.p2sh({
-    redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
+    redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[BITCOIN_NETWORK] }),
   });
 
   return new HttpSuccess({
@@ -99,6 +100,7 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
   }
 
   const {
+    BITCOIN_NETWORK,
     COIN_TYPE,
   } = process.env;
 
@@ -111,7 +113,7 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
 
   // DERIVE CHILD WALLET
   const child: bitcoin.BIP32Interface = root.derivePath(path);
-  const { address } = bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] });
+  const { address } = bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[BITCOIN_NETWORK] });
 
   return new HttpSuccess({
     address,
