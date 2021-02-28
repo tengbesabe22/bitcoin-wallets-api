@@ -18,6 +18,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateBech32Wallet = exports.generateBip49Wallet = exports.generateP2SHWallet = void 0;
 require('dotenv').config();
@@ -28,7 +31,9 @@ var HttpError_1 = require("./responses/HttpError");
 var HttpSuccess_1 = require("./responses/HttpSuccess");
 var number_validator_1 = require("./validators/number.validator");
 var wallet_utils_1 = require("./utils/wallet.utils");
+var logger_utils_1 = __importDefault(require("./utils/logger.utils"));
 var TAG = '[WalletService]';
+var logger = new logger_utils_1.default();
 var bitcoinNetwork = bitcoin.networks;
 /**
  * Generate Multisignature P2SH wallet
@@ -38,7 +43,7 @@ var bitcoinNetwork = bitcoin.networks;
  */
 function generateP2SHWallet(n, m, publicKeys) {
     var METHOD = '[generateP2SHWallet]';
-    console.info(TAG + " " + METHOD);
+    logger.info(TAG + " " + METHOD);
     var BITCOIN_NETWORK = process.env.BITCOIN_NETWORK;
     if (Number.isNaN(Number(m)) || Number.isNaN(Number(n))) {
         throw new BadError_1.BadError('Invalid M or N, must be a number');
@@ -74,7 +79,7 @@ function generateP2SHWallet(n, m, publicKeys) {
 exports.generateP2SHWallet = generateP2SHWallet;
 function generateBip49Wallet(mnemonic, initialPath) {
     var METHOD = '[generateBip49Wallet]';
-    console.info(TAG + " " + METHOD);
+    logger.info(TAG + " " + METHOD);
     if (!bip39.validateMnemonic(mnemonic)) {
         throw new BadError_1.BadError('Invalid Mnemonic');
     }
@@ -97,7 +102,7 @@ function generateBip49Wallet(mnemonic, initialPath) {
 exports.generateBip49Wallet = generateBip49Wallet;
 function generateBech32Wallet(mnemonic, initialPath) {
     var METHOD = '[generateBech32Wallet]';
-    console.info(TAG + " " + METHOD);
+    logger.info(TAG + " " + METHOD);
     if (!bip39.validateMnemonic(mnemonic)) {
         throw new BadError_1.BadError('Invalid Mnemonic');
     }

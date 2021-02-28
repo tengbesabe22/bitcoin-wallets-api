@@ -6,8 +6,10 @@ import { HttpError } from './responses/HttpError';
 import { HttpSuccess } from './responses/HttpSuccess';
 import { isWholeNumber } from './validators/number.validator';
 import { standardizePath } from './utils/wallet.utils';
+import Logger from './utils/logger.utils';
 
 const TAG = '[WalletService]';
+const logger = new Logger()
 
 const bitcoinNetwork: { [key: string]:  bitcoin.Network } = bitcoin.networks;
 /**
@@ -18,8 +20,7 @@ const bitcoinNetwork: { [key: string]:  bitcoin.Network } = bitcoin.networks;
  */
 export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
   const METHOD = '[generateP2SHWallet]';
-  console.info(`${TAG} ${METHOD}`);
-
+  logger.info(`${TAG} ${METHOD}`);
   const {
     BITCOIN_NETWORK,
   } = process.env;
@@ -61,7 +62,7 @@ export function generateP2SHWallet(n: number, m: number, publicKeys: string[]) {
 
 export function generateBip49Wallet(mnemonic: string, initialPath: string) {
   const METHOD = '[generateBip49Wallet]';
-  console.info(`${TAG} ${METHOD}`);
+  logger.info(`${TAG} ${METHOD}`);
 
   if (!bip39.validateMnemonic(mnemonic)) {
     throw new BadError('Invalid Mnemonic');
@@ -91,7 +92,7 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
 
 export function generateBech32Wallet(mnemonic: string, initialPath: string) {
   const METHOD = '[generateBech32Wallet]';
-  console.info(`${TAG} ${METHOD}`);
+  logger.info(`${TAG} ${METHOD}`);
 
   if (!bip39.validateMnemonic(mnemonic)) {
     throw new BadError('Invalid Mnemonic');

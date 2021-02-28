@@ -6,10 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var cors_1 = __importDefault(require("cors"));
 var body_parser_1 = __importDefault(require("body-parser"));
+var logger_middleware_1 = require("./middlewares/logger.middleware");
 var wallets_1 = require("./wallets");
 var app = express_1.default();
 app.use(cors_1.default());
 app.use(body_parser_1.default.json());
+app.use(logger_middleware_1.loggerMiddleware);
 app.get('/', function (req, res, next) {
     res.send('Hello Everybody');
 });

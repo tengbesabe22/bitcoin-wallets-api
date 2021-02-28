@@ -1,12 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { loggerMiddleware } from './middlewares/logger.middleware';
 import { generateP2SHWallet, generateBip49Wallet, generateBech32Wallet } from './wallets';
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(loggerMiddleware)
 
 app.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.send('Hello Everybody');
