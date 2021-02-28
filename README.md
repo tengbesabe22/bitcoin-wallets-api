@@ -84,7 +84,7 @@ npm start
 - `publicKeys` array length should be equal to `m`
 - `publicKeys[i]` string length should be length 66 (public key specification)
 
-
+***
 ##### `POST /wallets/segwit/bip49`
 ##### Request Body:
 ```json
@@ -131,6 +131,7 @@ npm start
 - `mnemonic` should adhere to [bip49 standards](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt) with 12 random dictionary words
 - `path` should adhere to [bip 44 derivation path standard](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
 
+***
 ##### `POST /wallets/segwit/bech32`
 ##### Request Body:
 ```json
