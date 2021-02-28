@@ -6,7 +6,7 @@ Bitcoin Wallets API is a REST API for generation of Bitcoin Wallets
 There are three kinds of wallet that the API can make, these are:
 
 - Transitional Segwit Wallet (P2SH) using BIP49 standard
-- Native Segwit Wallet (bech32) using BIP85 standard
+- Native Segwit Wallet (bech32) using BIP84 standard
 - Multisignature Pay-to-ScriptHash(P2SH)
 
 
@@ -49,11 +49,36 @@ npm start
 }
 ```
 ##### Response Body:
+`200`
 ```json
 {
-    "address": "35URh6yUJTP1uh5XgEtTsidXRgqw85wJ4K"
+    "timestamp": "2021-02-28T13:57:03.757Z",
+    "status": 200,
+    "message": "OK",
+    "data": {
+        "address": "3LHVRfPEtYooSnknqv4mXgmM7U9aNcEDn4"
+    }
 }
 ```
+
+`400`
+```json
+{
+    "timestamp": "2021-02-28T07:00:10.313Z",
+    "status": 400,
+    "message": "Invalid Public Key on index 0"
+}
+```
+
+`500`
+```json
+{
+    "timestamp": "2021-02-28T13:59:04.363Z",
+    "status": 500,
+    "message": "Something went wrong message"
+}
+```
+}
 ##### Validations:
 - `n` and `m` should be valid whole numbers
 - `publicKeys` array length should be equal to `m`
@@ -70,16 +95,41 @@ npm start
 ```
 
 ##### Response Body:
+`200`
 ```json
 {
-    "address": "37YwJrDzHedhFiaTzgcQbQiSVBZC4PJne2",
-    "publicKey": "03af4bb0fac753a87702a6da9aee0dd07338447162940ca7131414ebe869421caf",
-    "privateKey": "L433tM5urMc1NqfytCFjQage3uGV9dWSb8zX9e3AUjDxJa5JHK3R"
+    "timestamp": "2021-02-28T13:57:44.254Z",
+    "status": 200,
+    "message": "OK",
+    "data": {
+        "address": "38xmkTFyCcPtLjM1vcUnz3V6b8w8gZNu39",
+        "publicKey": "023fc8a9b508d06b47f92376df12d8a356472676e34037409bd3cc36da235c1709",
+        "privateKey": "819d03847b88898aeafc75831c5233acc0fb0bc390a1360c581dbae9c488237f"
+    }
+}
+```
+
+`400`
+```json
+{
+    "timestamp": "2021-02-28T13:59:04.363Z",
+    "status": 400,
+    "message": "Invalid Mnemonic"
+}
+```
+
+`500`
+```json
+{
+    "timestamp": "2021-02-28T13:59:04.363Z",
+    "status": 500,
+    "message": "Something went wrong message"
 }
 ```
 
 ##### Validations:
 - `mnemonic` should adhere to [bip49 standards](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt) with 12 random dictionary words
+- `path` should adhere to [bip 44 derivation path standard](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
 
 ##### `POST /wallets/segwit/bech32`
 ##### Request Body:
@@ -90,13 +140,37 @@ npm start
 }
 ```
 ##### Response Body:
+`200`
 ```json
 {
-    "address": "bc1qlx5g67uxj4l5xyl8kt0tq2taew4a2swfexnk7m",
-    "publicKey": "022d44cab5c314c04b5897c6a0d58c30d407ea3ca31ed0bf308c649117c3d8fef3",
-    "privateKey": "KwdkECHjnHEPdA5VsNeznDZ8biS1E4FwPbwy1NnW5DpUU7vxJf2Z"
+    "timestamp": "2021-02-28T13:54:01.209Z",
+    "status": 200,
+    "message": "OK",
+    "data": {
+        "address": "bc1qlx5g67uxj4l5xyl8kt0tq2taew4a2swfexnk7m",
+        "publicKey": "022d44cab5c314c04b5897c6a0d58c30d407ea3ca31ed0bf308c649117c3d8fef3",
+        "privateKey": "0c5d58cc2d5f20013f6b1c8482a2d32328e5e6f828e6f1a218d41957451d0247"
+    }
+}
+```
+
+`400`
+```json
+{
+    "timestamp": "2021-02-28T14:00:48.635Z",
+    "status": 400,
+    "message": "Invalid Mnemonic"
+}
+```
+
+`500`
+```json
+{
+    "timestamp": "2021-02-28T13:59:04.363Z",
+    "status": 500,
+    "message": "Something went wrong message"
 }
 ```
 ##### Validations:
 - `mnemonic` should adhere to [bip49 standards](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt) with 12 random dictionary words
-
+- `path` should adhere to [bip 44 derivation path standard](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
