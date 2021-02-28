@@ -84,7 +84,7 @@ export function generateBip49Wallet(mnemonic: string, initialPath: string) {
   return {
     address: wallet.address,
     publicKey: wallet.redeem!.pubkey!.toString('hex'),
-    privateKey: child.toWIF()
+    privateKey: child.privateKey!.toString('hex'),
   };
 }
 
@@ -114,6 +114,6 @@ export function generateBech32Wallet(mnemonic: string, initialPath: string) {
   return {
     address,
     publicKey: child.publicKey.toString('hex'),
-    privateKey: child.toWIF(),
+    privateKey: child.privateKey!.toString('hex'),
   };
 }

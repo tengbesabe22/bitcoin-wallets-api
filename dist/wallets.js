@@ -87,12 +87,10 @@ function generateBip49Wallet(mnemonic, initialPath) {
     var wallet = bitcoin.payments.p2sh({
         redeem: bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: bitcoinNetwork[process.env.BITCOIN_NETWORK] }),
     });
-    console.log(wallet);
-    // TODO: solve Object is possibly 'undefined'
     return {
         address: wallet.address,
         publicKey: wallet.redeem.pubkey.toString('hex'),
-        privateKey: child.toWIF()
+        privateKey: child.privateKey.toString('hex'),
     };
 }
 exports.generateBip49Wallet = generateBip49Wallet;
@@ -114,7 +112,7 @@ function generateBech32Wallet(mnemonic, initialPath) {
     return {
         address: address,
         publicKey: child.publicKey.toString('hex'),
-        privateKey: child.toWIF(),
+        privateKey: child.privateKey.toString('hex'),
     };
 }
 exports.generateBech32Wallet = generateBech32Wallet;
