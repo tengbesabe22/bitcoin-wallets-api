@@ -28,7 +28,7 @@ app.post('/wallets/multisig', (req: express.Request, res: express.Response, next
   }
 });
 
-app.post('/wallets/segwit/bip49', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.post('/wallets/segwit/p2sh', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const {
     mnemonic,
     path,

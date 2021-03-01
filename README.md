@@ -29,12 +29,15 @@ cd crypto-wallet-api
 
 npm install
 
+mv sample.env .env
+
 npm start
 ```
 
 ## Endpoints
 ---
 ##### `POST /wallets/multisig`
+Generate `n-out-of-m` multisignature Pay-to-ScriptHash (P2SH) bitcoin address 
 ##### Request Body:
 
 ```json
@@ -85,7 +88,8 @@ npm start
 - `publicKeys[i]` string length should be length 66 (public key specification)
 
 ***
-##### `POST /wallets/segwit/bip49`
+##### `POST /wallets/segwit/p2sh`
+Generate Hierarchical Deterministic (HD) Segregated Witness (SegWit) bitcoin address from a given seed and path using P2SH
 ##### Request Body:
 ```json
 {
@@ -133,6 +137,7 @@ npm start
 
 ***
 ##### `POST /wallets/segwit/bech32`
+Generate Hierarchical Deterministic (HD) Segregated Witness (SegWit) bitcoin address from a given seed and path using Bech32
 ##### Request Body:
 ```json
 {

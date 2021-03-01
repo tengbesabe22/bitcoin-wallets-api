@@ -25,7 +25,7 @@ app.post('/wallets/multisig', function (req, res, next) {
         res.status(WalletError.status).send(WalletError);
     }
 });
-app.post('/wallets/segwit/bip49', function (req, res, next) {
+app.post('/wallets/segwit/p2sh', function (req, res, next) {
     var _a = req.body, mnemonic = _a.mnemonic, path = _a.path;
     try {
         var wallet = wallets_1.generateBip49Wallet(mnemonic, path);
