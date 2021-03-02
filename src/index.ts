@@ -3,6 +3,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { loggerMiddleware } from './middlewares/logger.middleware';
 import { generateP2SHWallet, generateBip49Wallet, generateBech32Wallet } from './wallets';
+import { HttpSuccess } from './responses/HttpSuccess';
 
 const app = express();
 
@@ -22,7 +23,7 @@ app.post('/wallets/multisig', (req: express.Request, res: express.Response, next
   } = req.body;
   try {
     const wallet = generateP2SHWallet(n, m, publicKeys);
-    res.status(wallet.status).send(wallet)
+    res.status(200).send(new HttpSuccess(wallet));
   } catch (WalletError) {
     res.status(WalletError.status).send(WalletError);
   }
@@ -36,7 +37,7 @@ app.post('/wallets/segwit/p2sh', (req: express.Request, res: express.Response, n
 
   try {
     const wallet = generateBip49Wallet(mnemonic, path);
-    res.status(wallet.status).send(wallet);
+    res.status(200).send(new HttpSuccess(wallet));
   } catch (WalletError) {
     res.status(WalletError.status).send(WalletError);
   }
@@ -50,7 +51,7 @@ app.post('/wallets/segwit/bech32', (req: express.Request, res: express.Response,
 
   try {
     const wallet = generateBech32Wallet(mnemonic, path);
-    res.status(wallet.status).send(wallet);
+    res.status(200).send(new HttpSuccess(wallet));
   } catch (WalletError) {
     res.status(WalletError.status).send(WalletError);
   }
