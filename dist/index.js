@@ -8,6 +8,7 @@ var cors_1 = __importDefault(require("cors"));
 var body_parser_1 = __importDefault(require("body-parser"));
 var logger_middleware_1 = require("./middlewares/logger.middleware");
 var wallets_1 = require("./wallets");
+var HttpSuccess_1 = require("./responses/HttpSuccess");
 var app = express_1.default();
 app.use(cors_1.default());
 app.use(body_parser_1.default.json());
@@ -19,7 +20,7 @@ app.post('/wallets/multisig', function (req, res, next) {
     var _a = req.body, n = _a.n, m = _a.m, publicKeys = _a.publicKeys;
     try {
         var wallet = wallets_1.generateP2SHWallet(n, m, publicKeys);
-        res.status(wallet.status).send(wallet);
+        res.status(200).send(new HttpSuccess_1.HttpSuccess(wallet));
     }
     catch (WalletError) {
         res.status(WalletError.status).send(WalletError);
@@ -29,7 +30,7 @@ app.post('/wallets/segwit/p2sh', function (req, res, next) {
     var _a = req.body, mnemonic = _a.mnemonic, path = _a.path;
     try {
         var wallet = wallets_1.generateBip49Wallet(mnemonic, path);
-        res.status(wallet.status).send(wallet);
+        res.status(200).send(new HttpSuccess_1.HttpSuccess(wallet));
     }
     catch (WalletError) {
         res.status(WalletError.status).send(WalletError);
@@ -39,7 +40,7 @@ app.post('/wallets/segwit/bech32', function (req, res, next) {
     var _a = req.body, mnemonic = _a.mnemonic, path = _a.path;
     try {
         var wallet = wallets_1.generateBech32Wallet(mnemonic, path);
-        res.status(wallet.status).send(wallet);
+        res.status(200).send(new HttpSuccess_1.HttpSuccess(wallet));
     }
     catch (WalletError) {
         res.status(WalletError.status).send(WalletError);
