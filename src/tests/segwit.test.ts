@@ -61,3 +61,61 @@ describe('P2SH SEGWIT WALLETS', () => {
     }).toThrow('Invalid Path');
   });
 });
+
+describe('BECH32 SEGWIT WALLETS', () => {
+  it('should generate correct P2SH Segwit wallet', () => {
+    const mnemonic = 'ocean trend spy slab have below process angle thunder asthma panda wrestle';
+    const path = "m/84'/0'/0'/0/1";
+    const wallet = generateBech32Wallet(mnemonic, path);
+
+    if (process.env.BITCOIN_NETWORK === 'bitcoin') {
+      expect(wallet).toStrictEqual({
+        address: 'bc1qc6yekegsydjxva8x4cc8mc7me3d47hwjwpzcn7',
+        publicKey: '031a4b2acc3ad1f2e90033c44a0e46581e49a6f97061b7e41ff10d1ad9ff195ff6',
+        privateKey: '7a985db15c3b8cfd50af2792afe0f623f1539861abb07b0b7b3a51d6c4a85ebf' });
+    }
+    else if (process.env.BITCOIN_NETWORK === 'testnet') {
+      expect(wallet).toStrictEqual({
+        address: 'tb1qc6yekegsydjxva8x4cc8mc7me3d47hwjy8etgd',
+        publicKey: '031a4b2acc3ad1f2e90033c44a0e46581e49a6f97061b7e41ff10d1ad9ff195ff6',
+        privateKey: '7a985db15c3b8cfd50af2792afe0f623f1539861abb07b0b7b3a51d6c4a85ebf' });
+    }
+  });
+
+  it('should generate correct P2SH Segwit wallet with different path purpose', () => {
+    const mnemonic = 'ocean trend spy slab have below process angle thunder asthma panda wrestle';
+    const path = "m/77'/0'/0'/0/1";
+    const wallet = generateBech32Wallet(mnemonic, path);
+
+    if (process.env.BITCOIN_NETWORK === 'bitcoin') {
+      expect(wallet).toStrictEqual({
+        address: 'bc1qc6yekegsydjxva8x4cc8mc7me3d47hwjwpzcn7',
+        publicKey: '031a4b2acc3ad1f2e90033c44a0e46581e49a6f97061b7e41ff10d1ad9ff195ff6',
+        privateKey: '7a985db15c3b8cfd50af2792afe0f623f1539861abb07b0b7b3a51d6c4a85ebf' });
+    }
+    else if (process.env.BITCOIN_NETWORK === 'testnet') {
+      expect(wallet).toStrictEqual({
+        address: 'tb1qc6yekegsydjxva8x4cc8mc7me3d47hwjy8etgd',
+        publicKey: '031a4b2acc3ad1f2e90033c44a0e46581e49a6f97061b7e41ff10d1ad9ff195ff6',
+        privateKey: '7a985db15c3b8cfd50af2792afe0f623f1539861abb07b0b7b3a51d6c4a85ebf' });
+    }
+  });
+
+  it('should throw error on invalid mnemonic phrase', () => {
+    // 11 words
+    const mnemonic = 'trend spy slab have below process angle thunder asthma panda wrestle';
+    const path = "m/84'/0'/0'/0/1";
+    expect(() => {
+      generateBech32Wallet(mnemonic, path)
+    }).toThrow('Invalid Mnemonic');
+  });
+
+  it('should throw error on invalid path with incomplete data', () => {
+    const mnemonic = 'ocean trend spy slab have below process angle thunder asthma panda wrestle';
+    // invalid as per bip 44 derivation path
+    const path = "m/84'/0'/0'/";
+    expect(() => {
+      generateBech32Wallet(mnemonic, path)
+    }).toThrow('Invalid Path');
+  });
+});
